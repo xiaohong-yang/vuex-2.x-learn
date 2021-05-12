@@ -1,4 +1,5 @@
 # vuex-demo
+仅供学习使用
 
 ## Project setup
 ```
