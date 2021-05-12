@@ -1,0 +1,204 @@
+1.State
+    state提供唯一的公共数据源，所有共享的数据都要统一放到Store的State中进行存储。
+    // 创建store数据源，提供唯一公共数据
+        const store = new Vuex.Store({
+            state: { count: 0 }
+        })
+    // 组件访问State中数据的第一种方式：
+        // (当前)
+        this.$store.state.模块名.全局数据名称
+        或者(全局)
+        this.$store.state.全局数据名称
+    // 组件访问State中数据的第二种方式：
+        1.从vuex中按需引入mapState函数
+            import { mapstate ] from 'vuex'
+            通过刚才导入的mapState函数，将当前组件需要的全局数据，映射为当前组件的computed计算属性:
+        2.将全局数据，映射为当前组件的计算属性
+            // (当前)
+            computed: {
+                ...mapState('demo01', {count: 'count'})
+            }
+            或者(全局)
+            computed: {
+                ...mapState(['count'])
+            }
+2.Mutation
+    mutation用于变更store中的数据
+        1.只能通过mutation变更store数据，不可以直接操作store中的数据。
+        2.通过这种方式虽然操作起来稍微繁琐一些，但是可以集中监控所有数据的变化。
+        // 定义 mutation
+        const store = new Vuex.Store({
+            state: { count: 0 },
+            mutations: {
+                add(state) {
+                    // 变更状态
+                    state.count++
+                }
+            }
+        })
+        // 触发 mutation 第一次方式
+            // (当前)
+            methods: {
+                handle1 () {
+                    this.$store.commit('demo01.add')
+                }
+            }
+            或者(全局)
+            methods: {
+                handle1 () {
+                    this.$store.commit('add')
+                }
+            }
+            // 可以在触发mutations函数时传递参数：
+            const store = new Vuex.Store({
+                state: { count: 0 },
+                mutations: {
+                    addN(state, step) {
+                        // 变更状态
+                        state.count += step
+                    }
+                }
+            })
+            // (当前)
+            methods: {
+                handle2 () {
+                    this.$store.commit('demo01.addN', 3)
+                }
+            }
+            或者(全局)
+            methods: {
+                handle2 () {
+                     this.$store.commit('addN', 3)
+                }
+            }
+            // commit 的作用，就是调用某个mutation函数
+        // 触发 mutation 第二次方式
+            1.从vuex中按需引入mapMutations函数
+                import { mapMutations } from 'vuex'
+            2.将指定的mutations函数，映射为当前组件的methods函数
+                // (当前)
+                methods: {
+                    ...mapMutations('demo01', ['add', 'addN', 'reduce', 'reduceN'])
+                }
+                或者(全局)
+                methods: {
+                    ...mapMutations(['add', 'addN', 'reduce', 'reduceN'])
+                }
+        // 不要在 mutations 函数中，执行异步操作(同步线程等待，异步线程不等待)
+3.Action
+    action用于处理异步任务。
+        如果通过异步操作变更数据，必须通过Action，而不能使用Mutation，但是在Action中还是要通过触发Mutation的方式间接变更数据。
+        // 定义 Action
+        const store = new Vuex.Store({
+            state: { count: 0 },
+            mutations: {
+                add(state) {
+                    // 变更状态
+                    state.count++
+                }
+            },
+            actions: {
+                addAsync(context) {
+                    setTimeout(() => {
+                        context.commit('add')
+                    }, 1000)
+                }
+            }
+        })
+        // 触发 Actions 的第一种方式
+        // (当前)
+        methods: {
+            handle () {
+                this.$store.dispatch('demo01/addAsync')
+            }
+        }
+        或者(全局)
+        methods: {
+            handle () {
+                this.$store.dispatch('addAsync')
+            }
+        }
+        // 触发 Actions 的第一种方式
+            1.从vuex中按需引入mapActions函数
+                import { mapActions } from 'vuex'
+            2.将指定的mutations函数，映射为当前组件的methods函数
+                // (当前)
+                methods: {
+                    ...mapActions('demo01', ['addAsync', 'addNAsync', 'reduceAsync', 'reduceNAsync'])
+                }
+                或者(全局)
+                methods: {
+                    ...mapActions(['addAsync', 'addNAsync', 'reduceAsync', 'reduceNAsync'])
+                }
+4.Getter
+    Getter用于对Store 中的数据进行加工处理形成新的数据。
+        1.Getter可以对Store中已有的数据加工处理之后形成新的数据，类似Vue的计算属性。
+        2.Store中数据发生变化，Getter的数据也会跟着变化。
+        // 定义 Getter
+        const store = new Vuex.Store({
+            state: { count: 0 },
+            getters: {
+                showNum: state => {
+                    return '当前最新的数量是【' + state.count + '】'
+                }
+            }
+        })
+        // 使用getters的第一种方式
+        // (当前)
+        this.$store.getters["demo01/showNum"]
+        或者(全局)
+        this.$store.getters.方法名称
+        // 使用getters的第二种方式
+        import { mapActions } from 'vuex'
+        (当前)
+        computed: {
+            ...mapGetters('demo01', ['showNum'])
+        }
+        或者(全局)
+        computed: {
+            ...mapGetters(['showNum'])
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
